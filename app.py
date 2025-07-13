@@ -51,6 +51,7 @@ def test():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    print(f"=== UPLOAD REQUEST ===")
     print(f"Upload request received. Files: {list(request.files.keys())}")
     
     if 'file' not in request.files:
@@ -79,7 +80,12 @@ def upload_file():
             # Verify file was saved
             if os.path.exists(file_path):
                 file_size = os.path.getsize(file_path)
-                print(f"File saved successfully: {unique_filename}, size: {file_size} bytes")
+                print(f"✅ File saved successfully: {unique_filename}, size: {file_size} bytes")
+                
+                # Count total photos after upload
+                total_photos = len(get_uploaded_photos())
+                print(f"📸 Total photos in uploads folder: {total_photos}")
+                
                 return jsonify({
                     'success': True, 
                     'message': 'Photo uploaded successfully!',
@@ -87,13 +93,13 @@ def upload_file():
                     'url': url_for('uploaded_file', filename=unique_filename)
                 })
             else:
-                print(f"File was not saved: {file_path}")
+                print(f"❌ File was not saved: {file_path}")
                 return jsonify({'success': False, 'message': 'File was not saved properly'})
         except Exception as e:
-            print(f"Error saving file: {str(e)}")
+            print(f"❌ Error saving file: {str(e)}")
             return jsonify({'success': False, 'message': f'Error uploading file: {str(e)}'})
     else:
-        print(f"Invalid file type: {file.filename}")
+        print(f"❌ Invalid file type: {file.filename}")
         return jsonify({'success': False, 'message': 'Invalid file type. Please upload PNG, JPG, JPEG, GIF, or WebP files.'})
 
 @app.route('/uploads/<filename>')
@@ -104,12 +110,19 @@ def uploaded_file(filename):
 def get_photos():
     """API endpoint to get all uploaded photos"""
     photos = get_uploaded_photos()
-    return jsonify([{
+    print(f"API /photos called - found {len(photos)} photos")
+    for i, photo in enumerate(photos):
+        print(f"  {i+1}. {photo['filename']} - {photo['upload_time']} - {photo['size']} bytes")
+    
+    result = [{
         'filename': photo['filename'],
         'url': url_for('uploaded_file', filename=photo['filename']),
         'upload_time': photo['upload_time'].strftime('%B %d, %Y'),
         'size': photo['size']
-    } for photo in photos])
+    } for photo in photos]
+    
+    print(f"Returning {len(result)} photos to client")
+    return jsonify(result)
 
 @app.route('/delete/<filename>')
 def delete_file(filename):
