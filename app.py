@@ -10,6 +10,7 @@ app.secret_key = 'your-secret-key-here'  # Change this to a secure secret key
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
+REVIEWS_FILE = 'restaurant_reviews.json'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB max file size
 
@@ -23,6 +24,21 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def load_reviews():
+    """Load restaurant reviews from JSON file"""
+    if os.path.exists(REVIEWS_FILE):
+        try:
+            with open(REVIEWS_FILE, 'r') as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def save_reviews(reviews):
+    """Save restaurant reviews to JSON file"""
+    with open(REVIEWS_FILE, 'w') as f:
+        json.dump(reviews, f, indent=2)
 
 def get_uploaded_photos():
     """Get list of uploaded photos with metadata"""
@@ -123,6 +139,54 @@ def get_photos():
     
     print(f"Returning {len(result)} photos to client")
     return jsonify(result)
+
+@app.route('/reviews')
+def get_reviews():
+    """API endpoint to get all restaurant reviews"""
+    reviews = load_reviews()
+    print(f"API /reviews called - found {len(reviews)} reviews")
+    return jsonify(reviews)
+
+@app.route('/add_review', methods=['POST'])
+def add_review():
+    """API endpoint to add a new restaurant review"""
+    try:
+        data = request.get_json()
+        print(f"=== ADDING REVIEW ===")
+        print(f"Review data: {data}")
+        
+        # Validate required fields
+        required_fields = ['name', 'date', 'rating']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'success': False, 'message': f'Missing required field: {field}'})
+        
+        # Create review object
+        review = {
+            'id': str(uuid.uuid4()),
+            'name': data['name'],
+            'date': data['date'],
+            'cuisine': data.get('cuisine', ''),
+            'rating': int(data['rating']),
+            'johanna_favorite': data.get('johanna_favorite', ''),
+            'joseph_favorite': data.get('joseph_favorite', ''),
+            'review_text': data.get('review_text', ''),
+            'created_at': datetime.now().isoformat()
+        }
+        
+        # Load existing reviews and add new one
+        reviews = load_reviews()
+        reviews.insert(0, review)  # Add to beginning
+        save_reviews(reviews)
+        
+        print(f"✅ Review added successfully: {review['name']}")
+        print(f"📝 Total reviews: {len(reviews)}")
+        
+        return jsonify({'success': True, 'message': 'Review added successfully!', 'review': review})
+        
+    except Exception as e:
+        print(f"❌ Error adding review: {str(e)}")
+        return jsonify({'success': False, 'message': f'Error adding review: {str(e)}'})
 
 @app.route('/delete/<filename>')
 def delete_file(filename):

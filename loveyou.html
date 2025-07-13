@@ -798,81 +798,7 @@
                 </div>
 
                 <div class="reviews-container" id="reviewsContainer">
-                    <!-- Sample reviews -->
-                    <div class="review-card">
-                        <div class="review-header">
-                            <h4>The Board and Brew</h4>
-                            <div class="review-rating">
-                                <span class="stars">★★★★★</span>
-                                <span class="rating-text">5/5</span>
-                            </div>
-                        </div>
-                        <div class="review-meta">
-                            <span class="cuisine-tag">Cafe</span>
-                            <span class="date">June 29, 2023</span>
-                        </div>
-                        <div class="favorite-dishes">
-                            <div class="dish">
-                                <strong>Johanna's Pick:</strong> Signature sandwich with interesting tea
-                            </div>
-                            <div class="dish">
-                                <strong>Joseph's Pick:</strong> Board game special sandwich
-                            </div>
-                        </div>
-                        <div class="review-text">
-                            Our very first date! The atmosphere was perfect for getting to know each other. The sandwiches were delicious and the tea names were so creative. This place will always hold a special place in our hearts. ♥
-                        </div>
-                    </div>
-
-                    <div class="review-card">
-                        <div class="review-header">
-                            <h4>Devil's Alley</h4>
-                            <div class="review-rating">
-                                <span class="stars">★★★★☆</span>
-                                <span class="rating-text">4/5</span>
-                            </div>
-                        </div>
-                        <div class="review-meta">
-                            <span class="cuisine-tag">American</span>
-                            <span class="date">July 11, 2025</span>
-                        </div>
-                        <div class="favorite-dishes">
-                            <div class="dish">
-                                <strong>Johanna's Pick:</strong> Chicken sandwich and nachos
-                            </div>
-                            <div class="dish">
-                                <strong>Joseph's Pick:</strong> Signature burger
-                            </div>
-                        </div>
-                        <div class="review-text">
-                            Perfect for our 2nd anniversary dinner! The ambiance was romantic and the nachos were good. We loved celebrating our special day here after bowling. Great for reminiscing!
-                        </div>
-                    </div>
-
-                    <div class="review-card">
-                        <div class="review-header">
-                            <h4>Capital One Cafe</h4>
-                            <div class="review-rating">
-                                <span class="stars">★★★★★</span>
-                                <span class="rating-text">5/5</span>
-                            </div>
-                        </div>
-                        <div class="review-meta">
-                            <span class="cuisine-tag">Coffee & Light Bites</span>
-                            <span class="date">Regular visits</span>
-                        </div>
-                        <div class="favorite-dishes">
-                            <div class="dish">
-                                <strong>Johanna's Pick:</strong> Morning coffee made by Joseph
-                            </div>
-                            <div class="dish">
-                                <strong>Joseph's Pick:</strong> Afternoon study snacks
-                            </div>
-                        </div>
-                        <div class="review-text">
-                            Our go-to spot for working together! Nothing beats sitting side by side, being productive while enjoying great coffee. It's become our little routine and we love the atmosphere for both work and quality time.
-                        </div>
-                    </div>
+                    <!-- Reviews will be loaded dynamically -->
                 </div>
             </div>
         </div>
@@ -1391,18 +1317,113 @@
                 return;
             }
 
-            const reviewCard = createReviewCard({
+            const reviewData = {
                 name: restaurantName,
                 date: visitDate,
                 cuisine: cuisine,
                 rating: selectedRating,
-                johannaFavorite: johannaFavorite,
-                josephFavorite: josephFavorite,
-                review: reviewText
-            });
+                johanna_favorite: johannaFavorite,
+                joseph_favorite: josephFavorite,
+                review_text: reviewText
+            };
 
-            document.getElementById('reviewsContainer').insertBefore(reviewCard, document.getElementById('reviewsContainer').firstChild);
-            hideAddReviewForm();
+            // Send review to server
+            fetch('/add_review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reviewData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    hideAddReviewForm();
+                    loadReviews(); // Reload reviews to show the new one
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving review:', error);
+                showMessage('Error saving review: ' + error.message, 'error');
+            });
+        }
+
+        function loadReviews() {
+            console.log('=== LOADING REVIEWS ===');
+            fetch('/reviews')
+            .then(response => response.json())
+            .then(reviews => {
+                console.log('Reviews loaded:', reviews.length);
+                displayReviews(reviews);
+            })
+            .catch(error => {
+                console.error('Error loading reviews:', error);
+                showMessage('Error loading reviews: ' + error.message, 'error');
+            });
+        }
+
+        function displayReviews(reviews) {
+            const reviewsContainer = document.getElementById('reviewsContainer');
+            if (!reviewsContainer) {
+                console.error('Reviews container not found!');
+                return;
+            }
+            
+            // Clear existing reviews
+            reviewsContainer.innerHTML = '';
+            
+            if (reviews && reviews.length > 0) {
+                console.log(`Displaying ${reviews.length} reviews`);
+                reviews.forEach((review, index) => {
+                    const reviewCard = createReviewCard(review);
+                    reviewsContainer.appendChild(reviewCard);
+                });
+            } else {
+                console.log('No reviews found, showing sample reviews');
+                // Add sample reviews if none exist
+                addSampleReviews();
+            }
+        }
+
+        function addSampleReviews() {
+            const reviewsContainer = document.getElementById('reviewsContainer');
+            const sampleReviews = [
+                {
+                    name: 'The Board and Brew',
+                    date: 'June 29, 2023',
+                    cuisine: 'Cafe',
+                    rating: 5,
+                    johanna_favorite: 'Signature sandwich with interesting tea',
+                    joseph_favorite: 'Board game special sandwich',
+                    review_text: 'Our very first date! The atmosphere was perfect for getting to know each other. The sandwiches were delicious and the tea names were so creative. This place will always hold a special place in our hearts. ♥'
+                },
+                {
+                    name: 'Devil\'s Alley',
+                    date: 'July 11, 2025',
+                    cuisine: 'American',
+                    rating: 4,
+                    johanna_favorite: 'Chicken sandwich and nachos',
+                    joseph_favorite: 'Signature burger',
+                    review_text: 'Perfect for our 2nd anniversary dinner! The ambiance was romantic and the nachos were good. We loved celebrating our special day here after bowling. Great for reminiscing!'
+                },
+                {
+                    name: 'Capital One Cafe',
+                    date: 'Regular visits',
+                    cuisine: 'Coffee & Light Bites',
+                    rating: 5,
+                    johanna_favorite: 'Morning coffee made by Joseph',
+                    joseph_favorite: 'Afternoon study snacks',
+                    review_text: 'Our go-to spot for working together! Nothing beats sitting side by side, being productive while enjoying great coffee. It\'s become our little routine and we love the atmosphere for both work and quality time.'
+                }
+            ];
+            
+            sampleReviews.forEach(review => {
+                const reviewCard = createReviewCard(review);
+                reviewsContainer.appendChild(reviewCard);
+            });
         }
 
         function createReviewCard(review) {
@@ -1425,14 +1446,14 @@
                 </div>
                 <div class="favorite-dishes">
                     <div class="dish">
-                        <strong>Johanna's Pick:</strong> ${review.johannaFavorite || 'Not specified'}
+                        <strong>Johanna's Pick:</strong> ${review.johanna_favorite || 'Not specified'}
                     </div>
                     <div class="dish">
-                        <strong>Joseph's Pick:</strong> ${review.josephFavorite || 'Not specified'}
+                        <strong>Joseph's Pick:</strong> ${review.joseph_favorite || 'Not specified'}
                     </div>
                 </div>
                 <div class="review-text">
-                    ${review.review || 'No review text provided.'}
+                    ${review.review_text || 'No review text provided.'}
                 </div>
             `;
             
@@ -1444,6 +1465,7 @@
             console.log('Page loaded, initializing...');
             initPhotoUpload();
             loadPhotos();
+            loadReviews();
             updateStats();
             
             // Initialize star rating functionality
