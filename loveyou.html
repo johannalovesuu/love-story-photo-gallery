@@ -1354,14 +1354,19 @@
         function loadReviews() {
             console.log('=== LOADING REVIEWS ===');
             fetch('/reviews')
-            .then(response => response.json())
+            .then(response => {
+                console.log('Reviews API response status:', response.status);
+                return response.json();
+            })
             .then(reviews => {
-                console.log('Reviews loaded:', reviews.length);
+                console.log('Reviews loaded from API:', reviews);
+                console.log('Number of reviews:', reviews.length);
                 displayReviews(reviews);
             })
             .catch(error => {
                 console.error('Error loading reviews:', error);
-                showMessage('Error loading reviews: ' + error.message, 'error');
+                console.log('Falling back to sample reviews due to error');
+                addSampleReviews();
             });
         }
 
@@ -1376,13 +1381,13 @@
             reviewsContainer.innerHTML = '';
             
             if (reviews && reviews.length > 0) {
-                console.log(`Displaying ${reviews.length} reviews`);
+                console.log(`Displaying ${reviews.length} saved reviews`);
                 reviews.forEach((review, index) => {
                     const reviewCard = createReviewCard(review);
                     reviewsContainer.appendChild(reviewCard);
                 });
             } else {
-                console.log('No reviews found, showing sample reviews');
+                console.log('No saved reviews found, showing sample reviews');
                 // Add sample reviews if none exist
                 addSampleReviews();
             }
