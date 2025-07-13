@@ -708,9 +708,6 @@
                 <button class="upload-toggle-btn" onclick="loadPhotos()" style="margin-left: 10px; background: linear-gradient(135deg, #667eea, #764ba2);">
                     🔄 Refresh Photos
                 </button>
-                <button class="upload-toggle-btn" onclick="debugPhotos()" style="margin-left: 10px; background: linear-gradient(135deg, #e74c3c, #c0392b);">
-                    🐛 Debug Photos
-                </button>
             </div>
             
             <!-- Photo Grid -->
@@ -1172,29 +1169,7 @@
             }, 5000);
         }
         
-        function debugPhotos() {
-            console.log('=== DEBUG INFO ===');
-            console.log('Uploaded photos array:', uploadedPhotos);
-            console.log('Photo grid element:', document.getElementById('photo-grid'));
-            console.log('Current time:', new Date().toISOString());
-            
-            // Test the API directly
-            fetch('/photos?t=' + Date.now())
-            .then(response => response.json())
-            .then(photos => {
-                console.log('API returned photos:', photos);
-                showMessage(`API shows ${photos.length} photos`, 'success');
-                
-                // Force display photos with simple method
-                if (photos.length > 0) {
-                    simpleDisplayPhotos(photos);
-                }
-            })
-            .catch(error => {
-                console.error('API error:', error);
-                showMessage('API error: ' + error.message, 'error');
-            });
-        }
+
         
         function forceDisplayPhotos(photos) {
             console.log('Force displaying photos:', photos.length);
