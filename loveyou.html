@@ -711,6 +711,9 @@
                 <button class="upload-toggle-btn" onclick="loadPhotos()" style="margin-left: 10px; background: linear-gradient(135deg, #667eea, #764ba2);">
                     🔄 Refresh Photos
                 </button>
+                <button class="upload-toggle-btn" onclick="debugPhotos()" style="margin-left: 10px; background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                    🐛 Debug Photos
+                </button>
             </div>
             
             <!-- Photo Grid -->
@@ -1092,19 +1095,24 @@
             console.log('Displaying photos:', uploadedPhotos.length);
             const photoGrid = document.getElementById('photo-grid');
             
+            if (!photoGrid) {
+                console.error('Photo grid element not found!');
+                return;
+            }
+            
             // Clear existing photos
             photoGrid.innerHTML = '';
             
             // Add uploaded photos
-            uploadedPhotos.forEach(photo => {
-                console.log('Creating photo element for:', photo.filename);
-                const photoElement = createPhotoElement(photo);
-                photoGrid.appendChild(photoElement);
-            });
-            
-            // Add placeholder if no photos
-            if (uploadedPhotos.length === 0) {
-                console.log('No photos, adding placeholders');
+            if (uploadedPhotos && uploadedPhotos.length > 0) {
+                console.log('Adding', uploadedPhotos.length, 'photos to grid');
+                uploadedPhotos.forEach((photo, index) => {
+                    console.log(`Creating photo element ${index + 1}/${uploadedPhotos.length} for:`, photo.filename);
+                    const photoElement = createPhotoElement(photo);
+                    photoGrid.appendChild(photoElement);
+                });
+            } else {
+                console.log('No photos to display, adding placeholders');
                 addPlaceholders();
             }
         }
@@ -1253,14 +1261,6 @@
             }
         }
 
-        // Initialize everything when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded, initializing...');
-            initPhotoUpload();
-            loadPhotos();
-            updateStats();
-        });
-        
         // Restaurant Review Functions
         let selectedRating = 0;
 
@@ -1363,8 +1363,14 @@
             return card;
         }
 
-        // Initialize star rating functionality
+        // Initialize everything when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            initPhotoUpload();
+            loadPhotos();
+            updateStats();
+            
+            // Initialize star rating functionality
             const stars = document.querySelectorAll('.star');
             stars.forEach(star => {
                 star.addEventListener('click', function() {
@@ -1373,14 +1379,6 @@
                 });
             });
         });
-
-        // Also try loading photos immediately
-        console.log('Script loaded, loading photos...');
-        setTimeout(() => {
-            if (typeof loadPhotos === 'function') {
-                loadPhotos();
-            }
-        }, 1000);
     </script>
 </body>
 </html>
