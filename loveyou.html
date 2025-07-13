@@ -405,11 +405,211 @@
             border: 1px solid #f5c6cb;
         }
 
+        /* Restaurant Review Styles */
+        .restaurant-reviews {
+            margin-top: 20px;
+        }
+
+        .add-review-btn {
+            background: linear-gradient(135deg, #ff9ff3, #fd79a8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 159, 243, 0.3);
+        }
+
+        .add-review-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 159, 243, 0.4);
+        }
+
+        .review-form {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #ff9ff3;
+        }
+
+        .review-form.hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff9ff3;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 5px;
+        }
+
+        .star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffd700;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .save-btn, .cancel-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #ff9ff3, #fd79a8);
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 159, 243, 0.3);
+        }
+
+        .cancel-btn:hover {
+            background: #d0d0d0;
+        }
+
+        .reviews-container {
+            display: grid;
+            gap: 25px;
+        }
+
+        .review-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .review-header h4 {
+            color: #a29bfe;
+            font-size: 1.4em;
+            margin: 0;
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stars {
+            color: #ffd700;
+            font-size: 1.2em;
+        }
+
+        .rating-text {
+            color: #666;
+            font-weight: bold;
+        }
+
+        .review-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .cuisine-tag {
+            background: linear-gradient(135deg, #ff9ff3, #fd79a8);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .date {
+            color: #666;
+            font-style: italic;
+        }
+
+        .favorite-dishes {
+            margin-bottom: 15px;
+        }
+
+        .dish {
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .review-text {
+            color: #333;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 2.5em; }
             .section { padding: 25px; }
             .stats { grid-template-columns: repeat(2, 1fr); }
             .upload-area { padding: 20px 10px; }
+            .review-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .form-actions { flex-direction: column; }
         }
     </style>
 </head>
@@ -544,6 +744,135 @@
                     📸<br>
                     Latest Selfie<br>
                     <small>Click to add photo</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Our Dining Adventures</h2>
+            <div class="restaurant-reviews">
+                <div class="add-review-btn" onclick="showAddReviewForm()">
+                    <span>+ Add New Restaurant Review</span>
+                </div>
+                
+                <div class="review-form hidden" id="reviewForm">
+                    <h3>Add a New Restaurant Review</h3>
+                    <div class="form-group">
+                        <label for="restaurantName">Restaurant Name:</label>
+                        <input type="text" id="restaurantName" placeholder="Enter restaurant name">
+                    </div>
+                    <div class="form-group">
+                        <label for="visitDate">Date Visited:</label>
+                        <input type="date" id="visitDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="cuisine">Cuisine Type:</label>
+                        <input type="text" id="cuisine" placeholder="e.g., Italian, Asian, American">
+                    </div>
+                    <div class="form-group">
+                        <label for="rating">Rating:</label>
+                        <div class="star-rating" id="starRating">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="johannaFavorite">Johanna's Favorite Dish:</label>
+                        <input type="text" id="johannaFavorite" placeholder="What did Johanna love most?">
+                    </div>
+                    <div class="form-group">
+                        <label for="josephFavorite">Joseph's Favorite Dish:</label>
+                        <input type="text" id="josephFavorite" placeholder="What did Joseph love most?">
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewText">Our Experience:</label>
+                        <textarea id="reviewText" placeholder="Tell us about your dining experience together..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" onclick="saveReview()" class="save-btn">Save Review</button>
+                        <button type="button" onclick="hideAddReviewForm()" class="cancel-btn">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="reviews-container" id="reviewsContainer">
+                    <!-- Sample reviews -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <h4>The Board and Brew</h4>
+                            <div class="review-rating">
+                                <span class="stars">★★★★★</span>
+                                <span class="rating-text">5/5</span>
+                            </div>
+                        </div>
+                        <div class="review-meta">
+                            <span class="cuisine-tag">Cafe</span>
+                            <span class="date">June 29, 2023</span>
+                        </div>
+                        <div class="favorite-dishes">
+                            <div class="dish">
+                                <strong>Johanna's Pick:</strong> Signature sandwich with interesting tea
+                            </div>
+                            <div class="dish">
+                                <strong>Joseph's Pick:</strong> Board game special sandwich
+                            </div>
+                        </div>
+                        <div class="review-text">
+                            Our very first date! The atmosphere was perfect for getting to know each other. The sandwiches were delicious and the tea names were so creative. This place will always hold a special place in our hearts. ♥
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-header">
+                            <h4>Devil's Alley</h4>
+                            <div class="review-rating">
+                                <span class="stars">★★★★☆</span>
+                                <span class="rating-text">4/5</span>
+                            </div>
+                        </div>
+                        <div class="review-meta">
+                            <span class="cuisine-tag">American</span>
+                            <span class="date">July 11, 2025</span>
+                        </div>
+                        <div class="favorite-dishes">
+                            <div class="dish">
+                                <strong>Johanna's Pick:</strong> Chicken sandwich and nachos
+                            </div>
+                            <div class="dish">
+                                <strong>Joseph's Pick:</strong> Signature burger
+                            </div>
+                        </div>
+                        <div class="review-text">
+                            Perfect for our 2nd anniversary dinner! The ambiance was romantic and the nachos were good. We loved celebrating our special day here after bowling. Great for reminiscing!
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-header">
+                            <h4>Capital One Cafe</h4>
+                            <div class="review-rating">
+                                <span class="stars">★★★★★</span>
+                                <span class="rating-text">5/5</span>
+                            </div>
+                        </div>
+                        <div class="review-meta">
+                            <span class="cuisine-tag">Coffee & Light Bites</span>
+                            <span class="date">Regular visits</span>
+                        </div>
+                        <div class="favorite-dishes">
+                            <div class="dish">
+                                <strong>Johanna's Pick:</strong> Morning coffee made by Joseph
+                            </div>
+                            <div class="dish">
+                                <strong>Joseph's Pick:</strong> Afternoon study snacks
+                            </div>
+                        </div>
+                        <div class="review-text">
+                            Our go-to spot for working together! Nothing beats sitting side by side, being productive while enjoying great coffee. It's become our little routine and we love the atmosphere for both work and quality time.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -932,6 +1261,119 @@
             updateStats();
         });
         
+        // Restaurant Review Functions
+        let selectedRating = 0;
+
+        function showAddReviewForm() {
+            document.getElementById('reviewForm').classList.remove('hidden');
+            document.querySelector('.add-review-btn').style.display = 'none';
+        }
+
+        function hideAddReviewForm() {
+            document.getElementById('reviewForm').classList.add('hidden');
+            document.querySelector('.add-review-btn').style.display = 'block';
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('restaurantName').value = '';
+            document.getElementById('visitDate').value = '';
+            document.getElementById('cuisine').value = '';
+            document.getElementById('johannaFavorite').value = '';
+            document.getElementById('josephFavorite').value = '';
+            document.getElementById('reviewText').value = '';
+            selectedRating = 0;
+            updateStars();
+        }
+
+        function updateStars() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function setRating(rating) {
+            selectedRating = rating;
+            updateStars();
+        }
+
+        function saveReview() {
+            const restaurantName = document.getElementById('restaurantName').value;
+            const visitDate = document.getElementById('visitDate').value;
+            const cuisine = document.getElementById('cuisine').value;
+            const johannaFavorite = document.getElementById('johannaFavorite').value;
+            const josephFavorite = document.getElementById('josephFavorite').value;
+            const reviewText = document.getElementById('reviewText').value;
+
+            if (!restaurantName || !visitDate || selectedRating === 0) {
+                alert('Please fill in all required fields (Restaurant Name, Date, and Rating)');
+                return;
+            }
+
+            const reviewCard = createReviewCard({
+                name: restaurantName,
+                date: visitDate,
+                cuisine: cuisine,
+                rating: selectedRating,
+                johannaFavorite: johannaFavorite,
+                josephFavorite: josephFavorite,
+                review: reviewText
+            });
+
+            document.getElementById('reviewsContainer').insertBefore(reviewCard, document.getElementById('reviewsContainer').firstChild);
+            hideAddReviewForm();
+        }
+
+        function createReviewCard(review) {
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            
+            const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+            
+            card.innerHTML = `
+                <div class="review-header">
+                    <h4>${review.name}</h4>
+                    <div class="review-rating">
+                        <span class="stars">${stars}</span>
+                        <span class="rating-text">${review.rating}/5</span>
+                    </div>
+                </div>
+                <div class="review-meta">
+                    <span class="cuisine-tag">${review.cuisine || 'Not specified'}</span>
+                    <span class="date">${review.date}</span>
+                </div>
+                <div class="favorite-dishes">
+                    <div class="dish">
+                        <strong>Johanna's Pick:</strong> ${review.johannaFavorite || 'Not specified'}
+                    </div>
+                    <div class="dish">
+                        <strong>Joseph's Pick:</strong> ${review.josephFavorite || 'Not specified'}
+                    </div>
+                </div>
+                <div class="review-text">
+                    ${review.review || 'No review text provided.'}
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Initialize star rating functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    setRating(rating);
+                });
+            });
+        });
+
         // Also try loading photos immediately
         console.log('Script loaded, loading photos...');
         setTimeout(() => {
