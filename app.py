@@ -42,7 +42,7 @@ def get_uploaded_photos():
 @app.route('/')
 def index():
     """Serve the main love story page"""
-    return send_from_directory('..', 'loveyou.html')
+    return send_from_directory('.', 'loveyou.html')
 
 @app.route('/test')
 def test():
